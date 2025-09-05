@@ -1,7 +1,7 @@
 # 🐧 Linux-Log-Monitoring
-> `Nginx`의 `access.log`를 셸 스크립트와 `awk`로 분석하고, `cron`으로 주기 실행하여 시간대별 CSV 리포트를 생성합니다.
+> 셸 스크립트와 `awk`로 `Nginx`의 `access.log`를 분석하고, `cron`으로 작업을 자동화해 시간대별 CSV 리포트를 생성합니다.
 > 
-> 시간대별 CSV 리포트로 트래픽 패턴과 잠재 이슈를 빠르게 파악할 수 있습니다.
+> CSV 리포트에 기록된 CPU 사용률과 응답 시간 지표 등을 바탕으로 트래픽 패턴을 파악하고 잠재 이슈를 신속히 식별할 수 있습니다.
 
 ---
 ## 👥 Contributors
@@ -52,7 +52,7 @@ sudo systemctl enable nginx
 ```
 
 > 🔐 로그 읽기 권한  
-> Nginx 로그는 보통 `adm` 그룹에서 읽을 수 있음. `admin` 사용자로 분석한다면:
+> Nginx 로그는 보통 `adm` 그룹에서 읽을 수 있기 때문에, 다음 명령어를 통해 `admin` 사용자를 `adm` 그룹에 추가해야 합니다.
 > ```bash
 > sudo usermod -aG adm admin
 > # 새 로그인 세션에서 반영됨
