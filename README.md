@@ -1,7 +1,7 @@
 # 🐧 Linux-Log-Monitoring
-> Nginx 웹 서버의 접속 로그(`access.log`)를 자동 분석합니다.  
-> 셸 스크립트와 `awk`로 유의미한 데이터를 추출하고, `cron`으로 **주기적 자동화**합니다.  
-> 일자별 CSV 리포트로 **트래픽 패턴**과 **잠재 이슈**를 빠르게 파악할 수 있어요.
+> `Nginx`의 `access.log`를 셸 스크립트와 `awk`로 분석하고, `cron`으로 주기 실행하여 시간대별 CSV 리포트를 생성합니다.
+> 
+> 시간대별 CSV 리포트로 트래픽 패턴과 잠재 이슈를 빠르게 파악할 수 있습니다.
 
 ---
 ## 👥 Contributors
@@ -24,7 +24,7 @@
 
 ---
 
-## 1) 🌐 Nginx 설치 & 페이지 띄우기
+## 1. 🌐 Nginx 설치 & 페이지 띄우기
 
 ```bash
 # 패키지 목록 업데이트
@@ -60,7 +60,7 @@ sudo systemctl enable nginx
 
 ---
 
-## 2) 📜 스크립트
+## 2. 📜 스크립트
 
 ### 🌳 로그 실행 Tree
 <img width="460" alt="image" src="https://github.com/user-attachments/assets/9c0f37a6-fc46-450f-ace0-d4e4047e5773" />
@@ -166,7 +166,7 @@ echo "[OK] $TS  requests=>$REQ_CSV  cpu=>$CPU_CSV"
 
 ---
 
-## 3) ⏰ Crontab 자동화
+## 3. ⏰ Crontab 자동화
 
 ```bash
 crontab -e
@@ -189,7 +189,7 @@ crontab -e
 
 ---
 
-## 4) 📦 CSV 스키마 (컬럼 설명)
+## 4. 📦 CSV 스키마 (컬럼 설명)
 
 **🧾 requests-YYYYMMDD-HHMM.csv**
 | 컬럼명 | 의미 | 예시 |
@@ -211,7 +211,7 @@ crontab -e
 
 ---
 
-## 5) 🧰 AWK 분석 스크립트
+## 5. 🧰 AWK 분석 스크립트
 
 ### ⭐ 가장 많이 접속된 URL TOP 3
 ```bash
@@ -261,7 +261,7 @@ END{
 
 - 결과 사진
   
-  <img height="110" alt="image" src="https://github.com/user-attachments/assets/e8172b30-ea5c-49dc-b85a-ef58e3b84de6" />
+  <img height="140" alt="image" src="https://github.com/user-attachments/assets/e8172b30-ea5c-49dc-b85a-ef58e3b84de6" />
 
 ### 📈 CPU 사용률 최솟값/최댓값
 ```bash
