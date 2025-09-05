@@ -191,7 +191,8 @@ crontab -e
 
 ## 4. 📦 CSV 스키마 (컬럼 설명)
 
-**🧾 requests-YYYYMMDD-HHMM.csv**
+**`🧾 requests-YYYYMMDD-HHMM.csv`**
+
 | 컬럼명 | 의미 | 예시 |
 |---|---|---|
 | `timestamp` | Nginx `$time_local` + 타임존 | `05/Sep/2025:14:47:10 +0900` |
@@ -203,7 +204,8 @@ crontab -e
 | `referer` | HTTP Referer | `-` 또는 URL |
 | `user_agent` | 클라이언트 UA 문자열 | `Mozilla/5.0 ...` |
 
-**🧠 cpu_usage-YYYYMMDD-HHMM.csv**
+**`🧠 cpu_usage-YYYYMMDD-HHMM.csv`**
+
 | 컬럼명 | 의미 | 예시 |
 |---|---|---|
 | `timestamp` | 수집 시각(로컬) | `2025-09-05 14:47:07` |
