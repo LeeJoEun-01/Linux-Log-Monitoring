@@ -166,7 +166,9 @@ echo "[OK] $TS  requests=>$REQ_CSV  cpu=>$CPU_CSV"
 
 ---
 
-## 3. ⏰ Crontab 자동화
+## 3. ⏰ Crontab을 통한 로그 수집 자동화
+
+`crontab`을 활용해 `Nginx`의 `access.log`를 주기적으로 수집·분석하고 결과를 CSV로 기록하는 작업을 자동화합니다.
 
 ```bash
 crontab -e
@@ -189,9 +191,9 @@ crontab -e
 
 ---
 
-## 4. 📦 CSV 스키마 (컬럼 설명)
+## 4. 📦 CSV 리포트 스키마
 
-**`🧾 requests-YYYYMMDD-HHMM.csv`**
+**`🧾 requests-YYYYMMDD-HHMM.csv`** : 웹 서버 접속 요청을 파싱한 파일
 
 | 컬럼명 | 의미 | 예시 |
 |---|---|---|
@@ -204,7 +206,7 @@ crontab -e
 | `referer` | HTTP Referer | `-` 또는 URL |
 | `user_agent` | 클라이언트 UA 문자열 | `Mozilla/5.0 ...` |
 
-**`🧠 cpu_usage-YYYYMMDD-HHMM.csv`**
+**`🧠 cpu_usage-YYYYMMDD-HHMM.csv`** : 수집 시점의 시스템 전체 CPU 사용률 스냅샷
 
 | 컬럼명 | 의미 | 예시 |
 |---|---|---|
