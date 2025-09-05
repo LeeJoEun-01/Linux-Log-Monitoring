@@ -4,6 +4,18 @@
 - 셸 스크립트와 awk를 이용해 로그 파일에서 유의미한 데이터를 추출하고, cron을 통해 분석 작업을 주기적으로 **자동화**합니다.
 - 이 프로젝트를 통해 생성된 일일 리포트로 서버의 트래픽 패턴과 잠재적인 이슈를 손쉽게 파악하고 모니터링할 수 있습니다.
 
+### 🛠️Tech Stacks
+- Linux (Ubuntu 24.04.2)
+- Nginx
+- Shell Script (Bash)
+- awk
+- cron
+  
+### ⚙️Tools
+| MobaXterm | Visual Studio Code |
+|---|---|
+|<img width="500" alt="image" src="https://github.com/user-attachments/assets/204d40a4-0533-4a2e-bd88-271b49dedabe"/>| <img width="500" alt="image" src="https://github.com/user-attachments/assets/5ef88a91-d894-4bff-9d31-a0d7fdb48b1d" /> |
+
 # 1. nginx 설치 및 웹 페이지 띄우기
 
 **1. Nginx 설치하기**
