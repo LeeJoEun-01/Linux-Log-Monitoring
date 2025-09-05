@@ -1,7 +1,7 @@
 # 🐧Linux-Log-Monitoring
 리눅스 로그 데이터 수집 및 모니터링 <br>
 - Nginx 웹 서버의 접속 로그(access.log)를 자동으로 분석하는 시스템입니다.
-- 셸 스크립트와 awk를 이용해 로그 파일에서 유의미한 데이터를 추출하고, cron을 통해 분석 작업을 주기적으로 자동화합니다.
+- 셸 스크립트와 awk를 이용해 로그 파일에서 유의미한 데이터를 추출하고, cron을 통해 분석 작업을 주기적으로 **자동화**합니다.
 - 이 프로젝트를 통해 생성된 일일 리포트로 서버의 트래픽 패턴과 잠재적인 이슈를 손쉽게 파악하고 모니터링할 수 있습니다.
 
 # 1. nginx 설치 및 웹 페이지 띄우기
@@ -43,6 +43,9 @@
 <br>
 
 # 2. 로그 실행 및 수집 스크립트
+### 🌳로그 실행 Tree
+<img width="460" alt="image" src="https://github.com/user-attachments/assets/9c0f37a6-fc46-450f-ace0-d4e4047e5773" />
+
 ### 📄createLog.sh - 로그 생성 스크립트
 ```shell
 #!/bin/bash
@@ -170,6 +173,8 @@ echo "[OK] $TS requests=>$REQ_CSV cpu=>$CPU_CSV"
 */3 * * * * /home/admin/nginx-log-scripts/createLog.sh
 ```
 
+<br>
+
 # 4. AWK
 **1. 가장 많이 접속된 URL top 3**
 ```shell
@@ -202,7 +207,10 @@ gawk -v FPAT='([^,]+)|(\"[^\"]*\")' '
 ' "${FILES[@]}"
 ```
 - 결과 사진
-  
+<img height="110" alt="image" src="https://github.com/user-attachments/assets/e8172b30-ea5c-49dc-b85a-ef58e3b84de6" />     
+
+<br>
+
 **2. CPU 사용량의 최대값/최소값**
 ```shell
 #!/usr/bin/env bash
@@ -227,3 +235,4 @@ awk -F, '
 ' "${FILES[@]}"
 ```
 - 결과 사진
+<img height="50" alt="image" src="https://github.com/user-attachments/assets/6e57783f-4cf4-4a59-8b3b-31e0815b4dfc" />
