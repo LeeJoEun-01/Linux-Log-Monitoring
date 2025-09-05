@@ -144,3 +144,109 @@ echo "$TS,$CPU" >> "$CPU_CSV"
 rm -rf "$TMP"
 echo "[OK] $TS  requests→$REQ_CSV  cpu→$CPU_CSV
 ```
+--
+
+# 3. Crontab 스케줄링
+- 실행방법: **`crontab -e`**
+- createLog.sh를 3분에 한 번씩 실행 (로그 생성)
+- analyzer.sh를 10분에 한 번씩 실행 →  (모니터링)
+    - URL별 페이지 접속 횟수, CPU 사용량, 응답 시간
+``` shell
+# 10분마다 Nginx 로그 분석 스크립트 실행
+*/10 * * * * /home/admin/nginx-log-scripts/analyzer.sh
+
+# 3분마다 테스트 로그 생성 스크립트 실행
+*/3 * * * * /home/admin/nginx-log-scripts/createLog.sh
+```
+
+--
+# 4. AWK
+1. 가장 많이 접속된 URL top 3
+```shell
+#!/usr/bin/env bash
+set -euo pipefail
+DIR="/home/admin/log-reports"
+shopt -s nullglob
+FILES=("$DIR"/requests_*.csv)
+[ ${#FILES[@]} -gt 0 ] || { echo "[ERR] no requests_*.csv"; exit 1; }
+
+gawk -v FPAT='([^,]+)|(\"[^\"]*\")' '
+  FNR==1 { next }                          # 각 파일 헤더 스킵
+  {
+    u=$4; gsub(/"/,"",u); sub(/\?.*/,"",u) # 쿼리스트링 제거(원치 않으면 이 줄 삭제)
+    c[u]++
+  }
+  END{
+    t1c=t2c=t3c=-1; t1u=t2u=t3u=""
+    for(u in c){
+      v=c[u]
+      if(v>t1c){ t3c=t2c; t3u=t2u; t2c=t1c; t2u=t1u; t1c=v; t1u=u }
+      else if(v>t2c){ t3c=t2c; t3u=t2u; t2c=v; t2u=u }
+      else if(v>t3c){ t3c=v; t3u=u }
+    }
+    print "rank,count,url"
+    if(t1c>=0) printf "1,%d,%s\n", t1c, t1u
+    if(t2c>=0) printf "2,%d,%s\n", t2c, t2u
+    if(t3c>=0) printf "3,%d,%s\n", t3c, t3u
+  }
+' "${FILES[@]}"
+```
+- 결과 사진
+  
+2. CPU 사용량의 최대값/최소값
+```shell
+#!/usr/bin/env bash
+set -euo pipefail
+DIR="/home/admin/log-reports"
+shopt -s nullglob
+FILES=("$DIR"/cpu_usage_*.csv)
+[ ${#FILES[@]} -gt 0 ] || { echo "[ERR] no cpu_usage_*.csv"; exit 1; }
+
+awk -F, '
+  FNR==1 { next }                 # 헤더 스킵
+  {
+    ts=$1; v=$2+0
+    if(n==0||v<min){min=v; mint=ts}
+    if(n==0||v>max){max=v; maxt=ts}
+    n++
+  }
+  END{
+    if(n==0){print "min=NA, max=NA"; exit}
+    printf "min=%.2f%% (%s)\nmax=%.2f%% (%s)\n", min,mint,max,maxt
+  }
+' "${FILES[@]}"
+```
+- 결과 사진
+
+3. 응답 시간의 최대값/최소값
+```shell
+#!/usr/bin/env bash
+set -euo pipefail
+DIR="/home/admin/log-reports"
+
+# requests_*.csv 전부 모음 (없으면 에러)
+shopt -s nullglob
+FILES=("$DIR"/requests_*.csv)
+[ ${#FILES[@]} -gt 0 ] || { echo "[ERR] no requests_*.csv"; exit 1; }
+
+# CSV 안의 따옴표/콤마 안전 파싱을 위해 gawk FPAT 사용
+gawk -v FPAT='([^,]+)|(\"[^\"]*\")' '
+  FNR==1 { next }                               # 각 파일의 헤더 스킵
+  {
+    rt=$7; gsub(/"/,"",rt); if(rt==""||rt=="NA") next
+    ts=$1; gsub(/"/,"",ts)                      # 타임스탬프
+    url=$4; gsub(/"/,"",url)                    # URL
+
+    v=rt+0
+    if(k==0 || v<min){ min=v; mint=ts; minu=url }
+    if(k==0 || v>max){ max=v; maxt=ts; maxu=url }
+    k++
+  }
+  END{
+    if(k==0){ print "min=NA  max=NA"; exit }
+    printf "min=%.2fms (%s, %s)\n", min, mint, minu
+    printf "max=%.2fms (%s, %s)\n", max, maxt, maxu
+  }
+' "${FILES[@]}"
+```
+- 결과 사진
