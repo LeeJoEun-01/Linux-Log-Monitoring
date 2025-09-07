@@ -47,7 +47,9 @@ sudo systemctl enable nginx
 ```
 
 **문서 루트 구조**
-- 해당 구조 설계 이유: 모니터링 시스템 테스트를 위해 /main/과 /detail/ 경로를 의도적으로 분리했습니다. 이를 통해 <U>특정 페이지(예: 상세 페이지)에 과부하가 걸리는 시나리오를 재현</U>하고, 스크립트가 다양한 트래픽 패턴을 정확히 감지하는지 검증하고자 했습니다.
+- 해당 구조 설계 이유: 모니터링 시스템 테스트를 위해 /main/과 /detail/ 경로를 의도적으로 분리했습니다.
+
+  이를 통해 <U>특정 페이지(예: 상세 페이지)에 과부하가 걸리는 시나리오를 재현</U>하고, 스크립트가 다양한 트래픽 패턴을 정확히 감지하는지 검증하고자 했습니다.
 ```
 /var/www/html/
 ├─ main/
@@ -69,7 +71,35 @@ sudo systemctl enable nginx
 
 ---
 
-## 2. 📜 셸 스크립트
+## 2. 📦 CSV 리포트 스키마
+
+Nginx 접근 로그에서 파싱한 결과를 시각별 스냅샷 CSV로 저장할 때 적용되는 스키마입니다. 각 파일명은 `YYYYMMDD-HHMM` 형태이며, 한 주기의 수집 결과만 담습니다.
+
+**`🧾 requests-YYYYMMDD-HHMM.csv`** : `Nginx access.log`를 요청 단위별로 파싱한 결과
+
+| 컬럼명 | 의미 | 예시 |
+|---|---|---|
+| `timestamp` | Nginx `$time_local` + 타임존 | `05/Sep/2025:14:47:10 +0900` |
+| `ip` | 클라이언트 IP (프록시 앞단이면 XFF 고려) | `10.0.2.2`, `::1` |
+| `method` | HTTP 메서드 | `GET`, `POST` |
+| `url` | 요청 경로(쿼리 포함) | `/main/`, `/detail/3/` |
+| `status` | HTTP 상태 코드 | `200`, `301`, `404` |
+| `bytes` | `$body_bytes_sent` (응답 바디 바이트) | `1146` |
+| `referer` | HTTP Referer | `-` 또는 URL |
+| `user_agent` | 클라이언트 UA 문자열 | `Mozilla/5.0 ...` |
+
+**`🧠 cpu_usage-YYYYMMDD-HHMM.csv`** : 시스템 전체 CPU 사용률 스냅샷
+
+> 웹 요청 단위가 아닌 시스템 전체 지표이므로, 동일 시각의 요청 통계와 상관관계 분석에 활용할 수 있습니다.
+
+| 컬럼명 | 의미 | 예시 |
+|---|---|---|
+| `timestamp` | 수집 시각(로컬) | `2025-09-05 14:47:07` |
+| `cpu_percent` | 1초 샘플 기준 총 CPU 사용률(%) | `7.25` |
+
+---
+
+## 3. 📜 셸 스크립트
 
 ### 🌳 로그 실행 리스트
 <img width="460" alt="image" src="https://github.com/user-attachments/assets/9c0f37a6-fc46-450f-ace0-d4e4047e5773" />
@@ -100,9 +130,8 @@ echo "로그 생성 완료."
 ```
 
 ### 🔎 `analyzer.sh` (로그 → CSV)
-- 생성 파일:
-  - `requests-YYYYMMDD-HHMM.csv`
-  - `cpu_usage-YYYYMMDD-HHMM.csv`
+
+수집된 로그는 `/home/admin/log-reports` 경로에 `requests_*.csv`, `cpu_usage_*.csv` 형태로 기록됩니다.
 
 ```bash
 #!/usr/bin/env bash
@@ -175,20 +204,20 @@ echo "[OK] $TS  requests=>$REQ_CSV  cpu=>$CPU_CSV"
 
 ---
 
-## 3. ⏰ Crontab을 통한 로그 수집 자동화
+## 4. ⏰ Crontab을 통한 로그 수집 자동화
 
-`crontab`을 활용해 `Nginx`의 `access.log`를 주기적으로 수집·분석하고 결과를 CSV로 기록하는 작업을 자동화합니다.
+`crontab`을 활용해 트래픽 발생 및 `Nginx`의 `access.log`를 수집·기록하는 작업을 자동화합니다.
 
 ```bash
 crontab -e
 ```
 
 ```bash
-# 10분마다 Nginx 로그 분석 스크립트 실행
-*/10 * * * * /home/admin/nginx-log-scripts/analyzer.sh
-
-# 3분마다 테스트 로그 생성 스크립트 실행
+# 3분 주기로 트래픽 발생 스크립트 실행
 */3  * * * * /home/admin/nginx-log-scripts/createLog.sh
+
+# 10분 주기로 Nginx 로그 분석 스크립트 실행
+*/10 * * * * /home/admin/nginx-log-scripts/analyzer.sh
 ```
 
 > 🔎 동작 확인  
@@ -200,33 +229,14 @@ crontab -e
 
 ---
 
-## 4. 📦 CSV 리포트 스키마
-
-**`🧾 requests-YYYYMMDD-HHMM.csv`** : 웹 서버 접속 요청을 파싱한 파일
-
-| 컬럼명 | 의미 | 예시 |
-|---|---|---|
-| `timestamp` | Nginx `$time_local` + 타임존 | `05/Sep/2025:14:47:10 +0900` |
-| `ip` | 클라이언트 IP (프록시 앞단이면 XFF 고려) | `10.0.2.2`, `::1` |
-| `method` | HTTP 메서드 | `GET`, `POST` |
-| `url` | 요청 경로(쿼리 포함) | `/main/`, `/detail/3/` |
-| `status` | HTTP 상태 코드 | `200`, `301`, `404` |
-| `bytes` | `$body_bytes_sent` (응답 바디 바이트) | `1146` |
-| `referer` | HTTP Referer | `-` 또는 URL |
-| `user_agent` | 클라이언트 UA 문자열 | `Mozilla/5.0 ...` |
-
-**`🧠 cpu_usage-YYYYMMDD-HHMM.csv`** : 수집 시점의 시스템 전체 CPU 사용률 스냅샷
-
-| 컬럼명 | 의미 | 예시 |
-|---|---|---|
-| `timestamp` | 수집 시각(로컬) | `2025-09-05 14:47:07` |
-| `cpu_percent` | 1초 샘플 기준 총 CPU 사용률(%) | `7.25` |
-
----
-
 ## 5. 🧰 AWK 분석 스크립트
 
+crontab이 쌓아둔 CSV 스냅샷을 모아 간단한 인사이트를 즉시 산출합니다.
+
 ### ⭐ 가장 많이 접속된 URL TOP 3
+
+여러 `requests_*.csv`를 합쳐 URL별 요청 수를 집계하고, 상위 3개를 콘솔 표로 출력합니다.
+
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
@@ -277,6 +287,11 @@ END{
   <img height="140" alt="image" src="https://github.com/user-attachments/assets/e8172b30-ea5c-49dc-b85a-ef58e3b84de6" />
 
 ### 📈 CPU 사용률 최솟값/최댓값
+
+여러 `cpu_usage_*.csv`의 cpu_percent 값을 모아 전체 기간(min/max)과 해당 시각을 출력합니다.
+
+이 값은 요청 단위가 아니라 시스템 전체 스냅샷(1초 표본)입니다.
+
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
