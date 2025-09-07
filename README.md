@@ -1,7 +1,8 @@
-# 🐧 Linux-Log-Monitoring
-> 스크립트와 `awk`로 `Nginx`의 `access.log`를 분석하고, `cron`으로 작업을 자동화해 시간대별 CSV 리포트를 생성합니다.
+# 🐧 Service-Traffic-Analyzer
+> 운영 서비스에서 발생하는 **트래픽 과부하를 CPU 사용량과 응답 시간 기반으로 모니터링**하고 분석하는 프로젝트입니다.
 > 
-> 리포트에 기록된 CPU 사용률과 응답 시간 지표 등을 바탕으로 트래픽 패턴을 파악하고 잠재 이슈를 신속히 식별할 수 있습니다.
+> 스크립트와 awk를 활용해 **Nginx access.log**를 분석하고, cron을 이용해 작업을 자동화하여 시간대별 **CSV 리포트**를 생성합니다.
+> 생성된 리포트를 통해 CPU 사용률과 응답 시간 지표를 종합적으로 파악할 수 있으며, 이를 기반으로 **트래픽 패턴을 분석**하고 **잠재적인 성능 이슈를 신속하게 식별**할 수 있습니다.
 
 ---
 ## 👥 Contributors
@@ -12,15 +13,21 @@
 | [@LeeJoEun-01](https://github.com/LeeJoEun-01) | [@hyunn522](https://github.com/hyunn522) |
 
 ## 🛠️ Tech Stacks & Tools
-- `Linux (Ubuntu 24.04.2)`
-- `Nginx`
-- `Shell Script (Bash)`
-- `awk`
-- `cron`
+- **Linux (Ubuntu 24.04.2)**
+  : Nginx 서버 구동 및 로그 분석 스크립트 실행을 위한 기본 OS 환경으로 사용
+- **Nginx**
+  : 실제 운영 환경과 유사한 웹 서버 접속 로그(access.log) 생성
+- **Shell Script (Bash)**
+  : awk, cron 등 리눅스 명령어를 조합하여 로그 분석 및 리포팅 과정 자동화
+- **awk**
+  : 로그 파일에서 원하는 데이터 필드를 정밀하게 추출 및 가공
+- **cron**
+  : 분석 스크립트의 주기적인 실행을 위한 스케줄링
 
 | MobaXterm | Visual Studio Code |
 |---|---|
 |<img width="500" alt="image" src="https://github.com/user-attachments/assets/204d40a4-0533-4a2e-bd88-271b49dedabe"/>| <img width="500" alt="image" src="https://github.com/user-attachments/assets/5ef88a91-d894-4bff-9d31-a0d7fdb48b1d" /> |
+| 리눅스 서버 원격 접속 및 관리를 위해 사용 | 생성된 CSV 리포트의 데이터를 확인하고 분석하기 위해 사용 |
 
 ---
 
