@@ -32,6 +32,7 @@
 ---
 
 ## 1. 🌐 Nginx 설치 & 페이지 띄우기
+실제 웹 서비스와 동일한 환경을 시뮬레이션하고, 트래픽 과부하 분석의 핵심 데이터인 `응답 시간($request_time)`이 포함된 `접속 로그(access.log)`를 생성하기 위해 사용했습니다.
 
 ```bash
 # 패키지 목록 업데이트
@@ -46,6 +47,7 @@ sudo systemctl enable nginx
 ```
 
 **문서 루트 구조**
+- 해당 구조 설계 이유: 모니터링 시스템 테스트를 위해 /main/과 /detail/ 경로를 의도적으로 분리했습니다. 이를 통해 <U>특정 페이지(예: 상세 페이지)에 과부하가 걸리는 시나리오를 재현</U>하고, 스크립트가 다양한 트래픽 패턴을 정확히 감지하는지 검증하고자 했습니다.
 ```
 /var/www/html/
 ├─ main/
@@ -67,9 +69,9 @@ sudo systemctl enable nginx
 
 ---
 
-## 2. 📜 스크립트
+## 2. 📜 셸 스크립트
 
-### 🌳 로그 실행 Tree
+### 🌳 로그 실행 리스트
 <img width="460" alt="image" src="https://github.com/user-attachments/assets/9c0f37a6-fc46-450f-ace0-d4e4047e5773" />
 
 ### 🔎 `createLog.sh` (트래픽/로그 생성)
