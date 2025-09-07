@@ -99,12 +99,27 @@ Nginx 접근 로그에서 파싱한 결과를 시각별 스냅샷 CSV로 저장�
 
 ---
 
-## 3. 📜 셸 스크립트
+## 2. 📜 셸 스크립트
+
+####  셸 스크립트를 사용한 이유는❓
+
+> **1. 가볍고 빠른 실행**
+> 
+> 별도의 런타임 설치 없이 모든 리눅스에서 즉시 실행됩니다. 리소스를 거의 차지하지 않아 운영 서버에 부담을 주지 않고 모니터링하기에 이상적입니다.
+> 
+> **2. 강력한 텍스트 처리 능력**
+> 
+> `awk`, `grep` 등 강력한 텍스트 처리 명령어들을 유연하게 조합하여 사용 가능합니다.
+>
+> **3. 시스템 제어 및 자동화의 용이성**
+>
+> 셸 스크립트는 운영체제의 명령어를 직접 제어하는 데 특화되어 `cron`을 이용한 스케줄링 등 자동화 작업을 가장 간단하고 직관적으로 구현합니다.
 
 ### 🌳 로그 실행 리스트
 <img width="460" alt="image" src="https://github.com/user-attachments/assets/9c0f37a6-fc46-450f-ace0-d4e4047e5773" />
 
-### 🔎 `createLog.sh` (트래픽/로그 생성)
+### 🔎 트래픽/로그 생성 스크립트 (`createLog.sh`)
+Nginx 웹 서버에 의도적으로 접속하여 분석할 `access.log` 데이터를 생성
 ```bash
 #!/bin/bash
 
@@ -129,13 +144,17 @@ done
 echo "로그 생성 완료."
 ```
 
-### 🔎 `analyzer.sh` (로그 → CSV)
-
-수집된 로그는 `/home/admin/log-reports` 경로에 `requests_*.csv`, `cpu_usage_*.csv` 형태로 기록됩니다.
+### 🔎 로그를 CSV로 전환하는 스크립트 (`analyzer.sh`)
+모든 Nginx 접속 로그를 분석하여, **개별 요청 내역과 현재 CPU 사용률을 각각 타임스탬프가 찍힌 CSV 파일로 생성**하는 작업을 수행
+- 생성 파일:
+  - `requests-YYYYMMDD-HHMM.csv`
+  - `cpu_usage-YYYYMMDD-HHMM.csv`
 
 ```bash
 #!/usr/bin/env bash
+
 set -euo pipefail
+# ❇️ 의도치 않은 오류나 데이터 손상을 방지하는 중요한 설정
 
 # ===== 설정 =====
 OUT_DIR="/home/admin/log-reports"
@@ -148,6 +167,7 @@ CPU_CSV="${OUT_DIR}/cpu_usage_${FNAME_TS}.csv"  # CPU 스냅샷
 
 TMP="$(mktemp -d /tmp/ngx_analytics.XXXXXX)"
 trap 'rm -rf "$TMP"' EXIT
+# ❇️ 임시 파일/디렉터리 자동 정리
 
 TS="$(date '+%Y-%m-%d %H:%M:%S')"
 mkdir -p "$OUT_DIR"
@@ -186,6 +206,7 @@ function esc(s){ gsub(/"/, Q Q, s); return Q s Q }
 
 # ===== 2) CPU 사용률 스냅샷 =====
 cpu_pct() {
+  # ❇️ CPU 카운터 값을 1초 간격으로 두 번 읽어 그 차이를 계산함으로써,실제 1초 동안의 평균 CPU 사용률을 비교적 정확하게 측정
   read -r _ u n s i o irq sirq st _ < /proc/stat
   idle1=$((i+o)); non1=$((u+n+s+irq+sirq+st)); tot1=$((idle1+non1))
   sleep 1
