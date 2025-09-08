@@ -7,10 +7,10 @@
 ---
 ## 👥 Contributors
 
-| <img width="150px" src="https://avatars.githubusercontent.com/u/78733700?v=4"/> | <img width="150px" src="https://avatars.githubusercontent.com/u/81912226?v=4"/> |
-| :---: | :---: |
-| **이조은** | **정서현** |
-| [@LeeJoEun-01](https://github.com/LeeJoEun-01) | [@hyunn522](https://github.com/hyunn522) |
+| <img width="150px" src="https://avatars.githubusercontent.com/u/78733700?v=4"/> | <img width="150px" src="https://avatars.githubusercontent.com/u/88383179?v=4"/> | <img width="150px" src="https://avatars.githubusercontent.com/u/81912226?v=4"/> |
+| :---: | :---: | :---: |
+| **이조은** | **정다빈** | **정서현** |
+| [@LeeJoEun-01](https://github.com/LeeJoEun-01) | [@ddddabi](https://github.com/ddddabi) | [@hyunn522](https://github.com/hyunn522) |
 
 ## 🛠️ Tech Stacks & Tools
 - **Linux (Ubuntu 24.04.2)**
