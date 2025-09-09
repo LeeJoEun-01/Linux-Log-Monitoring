@@ -1,4 +1,4 @@
-# 🐧 jq 기반 명언 출력기
+# 📜 jq 기반 명언 출력기
 
 > 리눅스 학습 과정에서 지칠 때마다 따뜻한 위로와 통찰을 건네는 치유형 명령어 구현 — 명언 API를 활용해 콘솔에 귀엽게 명언 메시지 출력하기
 > 실시간 API 호출, `jq` 파싱, CSV 저장까지 자동화!
@@ -86,6 +86,10 @@
    👤 헬렌 켈러 (미국 작가, 사회운동가, 강연가)
    📅 2025-09-09 16:15:12
   ```
+- 고양이 기차<br>
+  | IMAGE     | GIF                    |
+  | ------------------ | --------------------- |
+  | <img width="350" alt="image" src="https://github.com/user-attachments/assets/323ba3ca-ed1d-4b13-be66-c59610c096b9" /> |<img width="500" alt="image" src="https://github.com/user-attachments/assets/1cc46d23-8948-42be-a01f-4a280e8e10cb" />             |
 
 
 ## 4. 사용자 관리
