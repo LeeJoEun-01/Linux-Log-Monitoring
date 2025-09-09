@@ -91,5 +91,3 @@
   | ------------------ | --------------------- |
   | <img width="350" alt="image" src="https://github.com/user-attachments/assets/323ba3ca-ed1d-4b13-be66-c59610c096b9" /> |<img width="500" alt="image" src="https://github.com/user-attachments/assets/1cc46d23-8948-42be-a01f-4a280e8e10cb" />             |
 
-
-## 4. 사용자 관리
